@@ -42,16 +42,54 @@ body {
 /* =========================================
    2. 레이아웃 및 갤러리 도면
    ========================================= */
-.app-container { display: flex; width: 100vw; height: 100vh; transition: all 0.8s cubic-bezier(0.65, 0, 0.35, 1); }
-.left-panel { 
-    width: 100%; height: 100%; 
-    background: var(--bg-left); 
-    border-right: 0.5px solid var(--panel-border); 
-    transition: width 0.8s cubic-bezier(0.65, 0, 0.35, 1), background-color 0.5s ease; 
-    position: relative; overflow-y: auto; flex-shrink: 0; scrollbar-width: none; 
+/* =========================================
+   📊 레이아웃 분할 (완벽한 50:50 동기화)
+   ========================================= */
+.app-container { 
+    display: flex; 
+    width: 100vw; 
+    height: 100vh; 
+    overflow: hidden; 
 }
-.left-panel::-webkit-scrollbar { display: none; }
-.app-container.split-mode .left-panel { width: calc((100vw * 5 / 12) + 2px); }
+
+/* 1. 기본 상태: 왼쪽 영역이 100% 꽉 차 있음 */
+.left-panel { 
+    width: 100vw; 
+    height: 100vh; 
+    background: var(--bg-left); 
+    border-right: 1px solid var(--panel-border); 
+    /* 패널 속도에 맞춰 부드럽게 반으로 줄어듭니다 */
+    transition: width 0.8s cubic-bezier(0.15, 0, 0.15, 1), background-color 0.5s ease; 
+    position: relative; 
+    overflow-y: auto; 
+    flex-shrink: 0; 
+}
+
+/* ✨ 2. 패널이 열렸을 때: 왼쪽 영역을 정확히 50%로 맞춤 */
+.app-container.split-mode .left-panel { 
+    width: 50vw; 
+}
+
+/* 3. 오른쪽 패널 기본 상태: 화면 오른쪽 밖에 50% 크기로 숨어 있음 */
+#right-panel {
+    position: fixed;
+    top: 0;
+    right: -50vw; /* 화면 밖으로 50vw만큼 밀어둠 */
+    width: 50vw;  /* ✨ 오른쪽 패널 크기를 화면의 절반(50%)으로 고정 */
+    height: 100vh;
+    background-color: var(--bg-right);
+    border-left: 1px solid var(--panel-border);
+    transition: right 0.8s cubic-bezier(0.15, 0, 0.15, 1);
+    z-index: 2000;
+    /* ✨ 이 두 줄을 반드시 추가해 주세요! ✨ */
+    overflow-y: auto;     /* 세로 스크롤 활성화 */
+    overflow-x: hidden;   /* 가로 스크롤 방지 */
+}
+
+/* ✨ 4. 패널이 열렸을 때: 오른쪽 50% 영역을 차지하며 들어옴 */
+.app-container.split-mode #right-panel {
+    right: 0;
+}
 
 .chip-grid { 
     position: relative; width: 100%; min-height: 200vh; padding: 0; 
@@ -62,46 +100,81 @@ body {
     transition: background-image 0.5s ease;
 }
 
-/* 칩 스타일 */
-.chip-package { position: absolute; transform: translate(-50%, -50%); z-index: 3; opacity: 0; transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1), opacity 0s; 
+/* 1. 칩 패키지 공통 레이아웃 */
+.chip-package { 
+    position: absolute; 
+    transform: translate(-50%, -50%); 
+    z-index: 3; 
+    opacity: 0; 
+    transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1), opacity 0s; 
 }
 .chip-package.size-2 { z-index: 2; } 
 .chip-package.size-3 { z-index: 1; } 
-.chip-package:hover { z-index: 100 !important; }
 .chip-package.show { opacity: 1; }
+.chip-package:hover { z-index: 100 !important; }
 
-.mini-chip { height: 25px; aspect-ratio: 1 / 1; background-color: var(--bg-color); border: 1px solid #ffffff; cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease; flex-shrink: 0; }
+/* 2. 개별 칩(도형) 기본 스타일 */
+.mini-chip { 
+    height: 25px; 
+    aspect-ratio: 1 / 1; 
+    background-color: var(--bg-color); 
+    border: 1px solid #ffffff; 
+    cursor: pointer; 
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border 0.3s ease; 
+    flex-shrink: 0; 
+}
 .chip-package.size-2 .mini-chip { height: 40px; }
 .chip-package.size-3 .mini-chip { height: 65px; }
 
-.mini-chip.active { border: 2px solid var(--text-title); box-shadow: 0 0 0 2px var(--bg-left); } 
-.mini-chip:hover { box-shadow: 0 4px 10px rgba(0,0,0,0.15); transform: scale(1.1); }
+/* 3. 상호작용 (Hover) */
+.mini-chip:hover { 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15); 
+    transform: scale(1.1); 
+}
+
+.mini-chip.active {
+    opacity: 1 !important;
+    
+    /* ✨ 1. 안쪽 띠: 칩 바로 바깥을 감싸는 까만색 선 (1px) */
+    border: 2px solid var(--text-title); 
+    
+    /* ✨ 2. 바깥쪽 띠: 까만 선 바깥으로 둘러지는 흰색 선 (1px) */
+    outline: 1px solid var(--bg-left);
+    
+    box-shadow: none;
+}
+
+/* 5. 활성화된 칩 옆의 라벨(텍스트) 상태 */
+.mini-chip.active + .chip-label,
+.chip-package.active .chip-label {
+    opacity: 1 !important; 
+    color: var(--text-main); 
+    font-weight: 700; /* 선택 시 가독성을 위해 살짝 두껍게 처리 */
+}
 
 /* 🌟 위도경도 라벨 (다크모드에서도 잘 보이게 투명도 보정!) */
 .chip-labels { 
     opacity: 0.35; 
     transition: opacity 0.3s ease, color 0.5s ease; 
     position: absolute; left: 100%; top: 50%; transform: translateY(-50%); margin-left: 8px; flex-direction: column; 
-    font-family: 'Courier Prime', Courier, monospace; font-size: 8px; font-weight: 700; 
+    font-family: 'Courier Prime', Courier, monospace; font-size: 8px; font-weight: 500; 
     color: var(--text-main); 
     line-height: 1.1; pointer-events: none;
 }
-.chip-package:hover .chip-labels { opacity: 1; }
-
-/* =========================================
-   3. 오른쪽 아카이브 패널
-   ========================================= */
-.right-panel { 
-    width: 0%; height: 100%; 
-    background-color: var(--bg-right); 
-    color: var(--text-main);
-    display: block; overflow-y: auto; 
-    position: relative; flex-shrink: 0; min-width: 0; scrollbar-width: none; 
-    /* 🌟 덮어씌워졌던 width 애니메이션 복구! */
-    transition: width 0.8s cubic-bezier(0.65, 0, 0.35, 1), background-color 0.5s ease, color 0.5s ease;
+/* ✨ 선택된 칩의 라벨은 투명도 100%로 유지 */
+.mini-chip.active {
+    opacity: 1 !important;
+    
+    /* ✨ 안쪽 띠: 쌩 흰색이 아니라 화면 배경색으로 설정해서 틈을 만듦 */
+    border: 1px solid var(--bg-left); 
+    
+    /* 바깥쪽 띠: 까만색(또는 테마의 타이틀 색상) 테두리 */
+    outline: 1px solid var(--text-title); 
+    
+    box-shadow: none;
 }
-.right-panel::-webkit-scrollbar { display: none; }
-.app-container.split-mode .right-panel { width: calc(100vw * 7 / 12); }
+
+.chip-package:hover .chip-labels { opacity: 1; }
 
 .fixed-viewport { position: sticky; top: 0; width: 100%; height: 100vh; display: flex; flex-direction: column; overflow: hidden; pointer-events: none; }
 .image-section { width: 100%; height: 50vh; background: #000; position: relative; flex-shrink: 0; }
@@ -177,14 +250,14 @@ body {
     left: 50%; 
     bottom: 20px; /* ✨ 40px에서 20px로 수정! 바닥에 착 붙습니다. */
     transform: translateX(-50%);
-    z-index: 1000; 
+    z-index: 3000; 
     pointer-events: none; 
     transition: all 0.5s cubic-bezier(0.65, 0, 0.35, 1); 
 }
 
-/* ✨ 패널 열렸을 때 (높이는 20px 그대로 유지, 가로만 이동) */
+/* ✨ 패널 열렸을 때 (오른쪽 패널의 정중앙인 75% 위치로 이동) */
 .split-mode #nav-guide {
-    left: calc((100vw * 5 / 12) + ((100vw * 7 / 12) / 2)); 
+    left: 75%; 
 }
 
 .guide-text, .scroll-instruction {
@@ -192,6 +265,14 @@ body {
     font-family: 'Courier Prime', monospace;
     animation: bounce 2s infinite;
 }
+
+/* 1. 기본 상태 (패널 닫힘): 스크롤 문구는 숨기고 클릭 문구만 보이기 */
+.scroll-instruction { display: none; }
+.guide-text { display: block; }
+
+/* 2. 패널 열림 상태 (split-mode): 클릭 문구는 숨기고 스크롤 문구만 보이기 */
+.split-mode .scroll-instruction { display: block; }
+.split-mode .guide-text { display: none; }
 
 @keyframes bounce {
     0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
@@ -203,41 +284,137 @@ body {
 /* =========================================
    4. 텍스트 및 데이터 영역
    ========================================= */
-.text-section { flex-grow: 1; width: 100%; position: relative; overflow: hidden; }
-
-.type-line { 
-    color: var(--text-main); 
-    line-height: 1.7; margin-bottom: 60px; white-space: pre-wrap; word-break: keep-all; overflow-wrap: break-word; font-size: 13px; 
+/* 1. 섹션 기본 구조 */
+.text-section { 
+    flex-grow: 1; 
+    width: 100%; 
+    position: relative; 
+    overflow: hidden; 
 }
 
-/* ✨ 1. 위경도 고정 띠: 위쪽 패딩을 40px -> 20px로 확 줄임 */
+/* 2. 위경도 고정 띠 (타이트하게 조정) */
 .coord-line { 
     position: absolute; 
     top: 0; left: 0; width: 100%;
     background: var(--coord-bg); 
     z-index: 100; 
-    /* 👇 여기가 핵심! 맨 앞 숫자를 20px(또는 15px)로 줄여서 타이트하게 만듭니다. */
     padding: 19px 120px 12px 60px; 
     margin-bottom: 0; 
     border-bottom: 0.5px solid var(--panel-border); 
     font-family: 'Courier Prime', monospace; 
     transition: background-color 0.5s ease;
+    font-size: 13px;
 }
 
-/* ✨ 2. 데이터 컨테이너: 띠가 얇아진 만큼 시작 위치도 살짝 올림 */
+/* 3. 데이터 컨테이너 (시작 위치 조정) */
 .data-container { 
-    /* 👇 위쪽 여백을 120px -> 100px로 줄여서 위경도 띠와의 간격을 맞춥니다. */
     padding: 100px 120px 100px 60px; 
     pointer-events: auto; 
     transition: transform 0.1s linear; 
 }
 
-#text-raw { color: var(--text-sub); font-family: 'Courier Prime', Courier, monospace; font-size: 12px; }
-#text-raw b.title { font-size: 15px; display: block; margin-bottom: 10px; color: var(--text-title); }
-#text-gemini { color: var(--text-main); transition: color 0.5s ease; }
-#text-gemini b.title { font-size: 16px; color: var(--text-title); display: block; margin-bottom: 15px; }
-#text-actual b { display: inline-block; margin-top: 15px; font-weight: 700; color: var(--text-title); }
-.color-swatch { display: inline-block; width: 12px; height: 12px; margin: 0 8px; vertical-align: middle; border: 0.5px solid var(--panel-border); }
+/* ---------------------------------------------------
+   ✨ 2열 마이크로 레이아웃 (11px 통일 버전)
+--------------------------------------------------- */
+
+.type-line {
+    display: flex; /* 2열 정렬 활성화 */
+    align-items: flex-start;
+    gap: 30px; /* 왼쪽 분류와 오른쪽 내용 사이 간격 */
+    margin-bottom: 80px; /* 단계별 세로 간격 */
+    width: 100%;
+    font-size: 11px;
+    line-height: 1.8;
+}
+
+/* 왼쪽 열: [ GEMINI INFERENCE_ ] 등 대분류 */
+.type-line b.title {
+    flex: 0 0 160px; /* 왼쪽 열 너비 고정 */
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-title);
+    letter-spacing: 0.02em;
+    margin-bottom: 0;
+    line-height: 1.8;
+}
+
+/* 오른쪽 열: 실제 데이터 내용 컨테이너 */
+.type-line .content-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* 하위 항목간 간격 */
+    color: var(--text-main);
+    font-family: 'Noto Sans KR', sans-serif;
+    /* ✨ [핵심] 한글 단어가 중간에 끊기지 않고 어절 단위로 줄바꿈되도록 설정 */
+    word-break: keep-all; 
+    /* ✨ 혹시나 띄어쓰기 없는 아주 긴 영문이나 숫자가 레이아웃을 뚫고 나가는 것을 방어 */
+    overflow-wrap: break-word;
+}
+
+/* 하위 소제목 (Visual, Geo-Pattern, ■ DESIGNATION 등) */
+.content-wrapper b {
+    display: block;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 0px;
+    line-height: 1.2 !important;
+    color: var(--text-title);
+    opacity: 0.9;
+}
+
+/* 단계별 미세 조정 */
+#text-raw { opacity: 0.8; } /* 로우 데이터는 약간 연하게 */
+#text-actual, #text-visual { color: var(--text-title); } /* 최종 단계는 진하게 */
+
+/* 컬러 스와치 크기 미세 조정 (글자가 작아졌으므로) */
+.color-swatch { 
+    display: inline-block; 
+    width: 10px; 
+    height: 10px; 
+    margin: 0 5px; 
+    vertical-align: middle; 
+    border: 0.5px solid var(--panel-border); 
+}
+
+/* 1단계: Raw Data (연하게) */
+#text-raw { 
+    color: var(--text-sub); 
+    opacity: 0.8; 
+}
+
+
+
+
+/* 3, 4단계: Actual & Visual (가장 선명하게) */
+#text-actual, #text-visual { 
+    color: var(--text-title); 
+}
+
+/* 단계별 메인 타이틀 ([ Raw Data ] 등) */
+.data-container b.title { 
+    font-size: 11px; /* 본문보다 살짝만 크게 하여 위계 유지 */
+    display: block; 
+    margin-bottom: 12px; 
+    color: var(--text-title); 
+    font-weight: 700; 
+    letter-spacing: 0.02em;
+}
+
+/* 상세 항목 타이틀 (■ DESIGNATION 등) */
+#text-actual b, #text-visual b { 
+    display: inline-block; 
+    margin-top: 15px; 
+    margin-bottom: 2px;
+    font-size: 9.5px; /* 본문보다 더 작게 쳐서 전문적인 도표 느낌 강조 */
+    font-weight: 700; 
+    color: var(--text-title); 
+    letter-spacing: 0.05em;
+    opacity: 0.9;
+}
+
+/* --------------------------------------------------- */
 
 /* 취소선 연출 */
 #text-gemini.corrected {
@@ -247,11 +424,16 @@ body {
 #text-gemini.corrected * { text-decoration: line-through; color: var(--text-sub); }
 
 
+
+
+/* style.css 에서 #v-indicator 부분을 찾아 이 내용으로 덮어씌우세요 */
+
 /* ✨ 1. 인디케이터 위치를 위경도 띠 아래로 내림 */
+/* 1. 인디케이터 전체 틀: 수민님 원안 수치 유지 */
 #v-indicator { 
     position: absolute; 
     right: 40px; 
-    top: 90px; /* 기존 50px -> 90px로 내려서 위경도 띠를 피합니다 */
+    top: 90px; 
     bottom: 50px; 
     display: flex; justify-content: center; z-index: 50; 
     pointer-events: none; opacity: 0; transition: opacity 0.5s ease; 
@@ -264,7 +446,6 @@ body {
     justify-content: space-between; align-items: center; padding: 10px 0; 
 }
 
-/* ✨ 1. 기본 상태: 아주 짧고 예민한 눈금 (가로 10px -> 6px로 축소) */
 .v-dot { 
     width: 6px;           
     height: 1px;          
@@ -273,17 +454,16 @@ body {
     transition: all 0.4s cubic-bezier(0.65, 0, 0.35, 1); 
 }
 
-/* ✨ 2. 활성화 상태: 앙증맞게 켜지는 작은 점 (6px -> 4px로 축소) */
 .v-dot.active { 
     width: 4px;           
     height: 4px; 
     border-radius: 50%;   
     background: var(--dynamic-glow, var(--dot-active)); 
-    /* 빛 번짐도 크기에 맞춰 8px -> 6px로 줄여서 은은하게 세팅 */
     box-shadow: 0 0 6px var(--dynamic-glow, var(--dot-active)); 
-    /* 1.5배로 커지던 것을 1.3배로 줄여서 덜 부담스럽게 켜지도록 조정 */
     transform: scale(1.3); 
 }
+
+
 /* 우측 상단 메뉴 컨테이너 */
 #top-right-menu {
     position: fixed;
@@ -346,10 +526,361 @@ body {
 
 /* 내부 텍스트 조판 */
 .about-section { margin-bottom: 30px; }
-.section-label { font-size: 11px; color: var(--text-title); margin-bottom: 8px; }
-.about-text { 
-    font-size: 12px; color: var(--text-main); 
-    line-height: 1.8; word-break: keep-all; 
-    overflow-wrap: break-word; /* 긴 영어 텍스트 자름 방지 */
-    opacity: 0.85;
+/* ABOUT 섹션의 소제목 ([ 01. DEFINITION ] 등) */
+.section-label {
+    display: block;
+    /* ✨ 폰트 크기를 기존보다 키우고, 굵게 처리합니다. */
+    font-size: 14px; 
+    font-weight: 800; 
+    
+    /* ✨ 아카이브 특유의 기계적인 느낌을 위해 자간을 살짝 넓힙니다. */
+    letter-spacing: 0em; 
+    
+    color: var(--text-title);
+    margin-bottom: 12px;
+    opacity: 1; /* 글자가 흐릿했다면 확실하게 진하게 만듦 */
+}
+
+/* 본문 텍스트는 가독성을 위해 크기를 유지합니다. */
+.about-text {
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--text-main);
+    opacity: 0.8;
+    word-break: keep-all; /* 단어 단위 줄바꿈 유지 */
+}
+
+/* 1. 망가진 속도감 완벽 복구 (1200vh 고정!) */
+.scroll-track {
+    width: 100%;
+    height: 1200vh !important; /* ✨ 수민님이 가장 마음에 들어 하셨던 그 속도입니다 */
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+/* 2. 화면이 위로 더 밀려 올라가지(덜 내려가게) 않도록 뷰포트 크기 꽉 묶기 */
+.fixed-viewport {
+    position: sticky;
+    top: 0;
+    height: 100vh !important; /* 스크롤을 끝까지 내려도 화면 크기 밖으로 넘어가지 않음 */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 3. 키워드 아래 쓸데없이 붕 뜨는 여백 싹둑 자르기 */
+.text-section {
+    padding-bottom: 20px !important; /* 바닥에 딱 달라붙지 않을 정도의 최소 숨구멍 */
+    margin-bottom: 0 !important;
+}
+
+.data-container {
+    margin-bottom: 15px !important;
+}
+
+#v-indicator {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* 오른쪽 패널 기본 상태 (스크롤 활성화) */
+#right-panel {
+    position: fixed;
+    top: 0;
+    right: -50vw; 
+    width: 50vw;  
+    height: 100vh;
+    background-color: var(--bg-right);
+    border-left: 1px solid var(--panel-border);
+    transition: right 0.8s cubic-bezier(0.15, 0, 0.15, 1);
+    z-index: 2000;
+    
+    /* ✨ [핵심] 이것만 있으면 됩니다! 스크롤을 허용하는 마법의 코드 */
+    overflow-y: auto;     
+    overflow-x: hidden;   
+}
+
+/* 만약 스크롤바 디자인이 너무 못생겨서 숨기고 싶다면, 기능은 살려두되 투명하게 만드세요 */
+#right-panel::-webkit-scrollbar {
+    width: 0px; /* 이렇게 하면 스크롤 기능은 작동하지만 화면에는 안 보입니다 */
+    background: transparent;
+}
+
+/* =========================================
+   ✨ 화면 분할 시 칩 그리드 왼쪽 여백 추가
+   ========================================= */
+.split-mode #chip-grid {
+    /* 기존 여백보다 훨씬 넉넉하게 왼쪽 공간을 확보합니다. 
+       80px, 100px, 12vw 등 수민님의 눈에 가장 예뻐 보이는 비율로 조절해 보세요! */
+    padding-left: 150px; 
+    
+    /* 패널이 열릴 때 여백도 부드럽게 늘어나도록 애니메이션 추가 */
+    transition: padding 0.8s cubic-bezier(0.15, 0, 0.15, 1);
+}
+
+/* =========================================
+   📊 리스트 뷰 (INDEX) 스타일
+   ========================================= */
+.list-view {
+    width: 100%;
+    padding: 80px 40px 40px 40px; 
+    /* ✨ 기본 서체는 내용(Content)을 위해 노토산스로 설정 */
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 300;
+}
+
+/* 화면 갈라졌을 때 왼쪽 여백 유지 */
+.split-mode .list-view {
+    padding-left: 40px !important; 
+    padding-right: 40px !important;
+}
+
+/* 표 머리글 */
+.list-header {
+    display: flex;
+    font-size: 10px;
+    color: var(--text-sub);
+    border-bottom: 1px solid var(--text-title);
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+    
+    /* 타자기 서체 적용 */
+    font-family: 'Courier Prime', monospace;
+    font-weight: 700; 
+}
+
+/* 표 내용 (한 줄) */
+/* ✨ 표 내용 (한 줄) - 위쪽 정렬로 변경! */
+.list-row {
+    display: flex;
+    align-items: flex-start;
+    font-size: 11px; /* ✨ 전체 글자 크기 11px로 통일 */
+    color: var(--text-main);
+    padding: 16px 0;
+    border-bottom: 1px solid var(--panel-border);
+    cursor: pointer;
+    transition: background 0.2s ease, padding-left 0.2s ease;
+    
+    /* 데이터 내용은 노토산스로 출력 */
+    font-family: 'Noto Sans KR', sans-serif;
+}
+/* 마우스 올렸을 때 효과 */
+.list-row:hover {
+    background: rgba(0, 0, 0, 0.03);
+    padding-left: 10px; 
+}
+
+/* ✨ 열(Column) 가로 비율 재조정 & 줄간격 통일 */
+/* ✨ 무조건 2줄로 고정하고 넘치면 '...' 으로 자르는 완벽한 세팅 */
+
+/* =========================================
+   📊 리스트 뷰 (INDEX) 스타일
+   ========================================= */
+.list-view {
+    width: 100%;
+    
+    /* ✨ 기존 양옆 여백(40px)을 100px 정도로 살짝만 늘려줍니다 */
+    /* 순서: 위(80px) 오른쪽(100px) 아래(40px) 왼쪽(100px) */
+    padding: 80px 100px 40px 100px; 
+    
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 300;
+}
+
+/* ✨ [System] 표 머리글: 원래의 '귀여운' 타자기 서체로 복구 */
+.list-header {
+    display: flex;
+    font-size: 10px;
+    color: var(--text-sub);
+    border-bottom: 1px solid var(--text-title);
+    padding-bottom: 8px;
+    margin-bottom: 0px;
+    letter-spacing: 1px;
+    
+    /* 타자기 서체 적용 */
+    font-family: 'Courier Prime', monospace;
+    font-weight: 700; 
+}
+
+/* [Content] 표 내용 (한 줄) */
+.list-row {
+    display: flex;
+    align-items: flex-start;
+    font-size: 11px; /* ✨ 전체 글자 크기 11px로 통일 */
+    color: var(--text-main);
+    padding: 16px 0;
+    border-bottom: 1px solid var(--panel-border);
+    cursor: pointer;
+    transition: background 0.2s ease, padding-left 0.2s ease;
+    
+    /* 데이터 내용은 노토산스로 출력 */
+    font-family: 'Noto Sans KR', sans-serif;
+}
+/* ✨ 6개 열(Column) 비율 재조정 */
+/* ✨ 파일명 가로폭 살짝 줄임 */
+.col-id { 
+    flex: 1.0; /* 기존 1.2에서 1.0으로 깎아냄 */
+    padding-right: 50px; /* 여백을 40px->50px로 늘려서 글자가 더 빨리 줄바꿈되게 유도 */
+    word-break: break-all; 
+    line-height: 1.5; 
+}
+
+/* ✨ 위도/경도 라인을 오른쪽으로 살짝 이동 */
+.col-coord { 
+    flex: 1.5; 
+    padding-left: 80px; /* 기존 30px에서 50px로 늘려서 전체를 오른쪽으로 밀어냄 */
+    padding-right: 20px; 
+    line-height: 1.5; 
+}
+
+/* (가운데 열들은 그대로 유지) */
+.col-date { flex: 1.2; color: var(--text-sub); line-height: 1.5;
+    position: relative; 
+    left: -80px; /* 원하는 만큼 숫자를 조절해 보세요! (-10px, -30px 등) */ }
+.col-color { flex: 1.0; display: flex; align-items: flex-start; line-height: 1.5; 
+position: relative; 
+    left: -80px; /* 원하는 만큼 숫자를 조절해 보세요! (-10px, -30px 등) */}
+.col-palette { flex: 0.8; display: flex; gap: 4px; align-items: flex-start; padding-top: 2px; 
+position: relative; 
+    left: -90px; /* 원하는 만큼 숫자를 조절해 보세요! (-10px, -30px 등) */}
+
+/* ✨ 키워드 가로폭 살짝 줄임 */
+.col-keyword { 
+    flex: 1.2; /* 기존 1.5에서 1.2로 깎아내서 글자들을 더 쫀쫀하게 모음 */
+    color: var(--text-sub); 
+    font-size: 11px; 
+    line-height: 1.5;
+    word-break: keep-all; 
+    
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* 메인 컬러 칩 및 팔레트 칩 디자인 */
+.list-color-swatch {
+    width: 12px; height: 12px;
+    display: inline-block;
+    margin-right: 8px;
+    margin-top: 2px;
+    border: 1px solid var(--panel-border);
+}
+
+.palette-swatch {
+    width: 12px; /* 쪼잔하게 작게 하지 말고 메인 컬러와 똑같은 크기로! */
+    height: 12px;
+    border: 1px solid var(--panel-border);
+    display: inline-block;
+}
+
+/* 선택된 칩의 라벨 텍스트 강조 (기존 코드 건드리지 않음) */
+.chip-label.active {
+    opacity: 1 !important;
+    color: var(--text-main) !important;
+    font-weight: 700;
+}
+
+/* ✨ 비주얼 어플리케이션: 컬러 스펙 가로 정렬 */
+/* ✨ 비주얼 어플리케이션: 4개 컬러를 2x2로 완벽 정렬 */
+.color-horizontal {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 좌우 50:50으로 정확히 나눔 */
+    gap: 12px 20px; 
+    margin-top: 10px;
+    width: 100%;
+}
+
+.color-item { display: flex; align-items: center; }
+.color-item .color-label { display: inline-block !important; width: 75px; margin: 0 !important; }
+.color-item .color-swatch { margin: 0 8px 0 0 !important; }
+.color-item .color-text { white-space: nowrap; }
+
+
+/* =========================================
+   ✨ 제미나이 팩트체크 (취소선 & 페이드아웃)
+   ========================================= */
+/* =========================================
+   ✨ 제미나이 팩트체크 (가장 확실한 취소선 & 페이드아웃)
+   ========================================= */
+
+/* 제미나이 전체 영역 부드럽게 연해질 준비 */
+#text-gemini { 
+    transition: opacity 0.3s ease !important; 
+}
+
+/* 팩트체크 당하면(rejected) 전체를 연하게 만들고, 전체에 취소선을 긋습니다! */
+#text-gemini.rejected {
+    opacity: 0.3 !important; 
+    text-decoration: line-through !important;
+    text-decoration-thickness: 1px !important; /* 선 두께 1px로 얇고 시크하게 */
+}
+
+/* 단, 타이틀([ GEMINI INFERENCE_ ])에는 취소선이 안 그어지도록 방어! */
+#text-gemini.rejected b.title {
+    text-decoration: none !important; 
+}
+/* 단, 타이틀([ GEMINI INFERENCE_ ])에는 취소선이 안 그어지도록 방어! */
+#text-gemini.rejected b.title {
+    text-decoration: none !important; 
+}
+
+/* =========================================
+   ✨ 해상도 단계별 경계선 (스크롤 연동 페이드인)
+   ========================================= */
+#text-gemini, #text-actual, #text-visual {
+    /* ✨ 평소에는 투명하게 숨겨둡니다 */
+    border-top: 1px solid transparent; 
+    padding-top: 24px !important; 
+    margin-top: 24px !important;  
+    
+    /* ✨ 선이 스르륵 나타나도록 부드러운 애니메이션 추가 */
+    transition: border-color 0.4s ease; 
+}
+
+/* ✨ 자바스크립트에서 이 클래스를 붙여주면 선이 나타납니다! */
+#text-gemini.show-line, 
+#text-actual.show-line, 
+#text-visual.show-line {
+    border-top: 1px solid var(--panel-border);
+}
+
+/* ✨ Grid와 List 뷰가 전환될 때 부드럽게 나타나는 애니메이션 */
+#chip-grid, #list-view {
+    animation: fadeInView 0.4s ease-out;
+}
+
+@keyframes fadeInView {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================
+   ✨ 모든 패널 스크롤바 완벽 숨기기 (스크롤 기능은 유지)
+   ========================================= */
+
+/* Firefox, IE, Edge 브라우저용 스크롤바 숨기기 */
+.left-panel, 
+#right-panel, 
+.chip-grid, 
+#chip-grid, 
+.list-view, 
+#list-view {
+    -ms-overflow-style: none !important; 
+    scrollbar-width: none !important; 
+}
+
+/* Chrome, Safari, Opera, Edge(크로미움) 브라우저용 스크롤바 숨기기 */
+.left-panel::-webkit-scrollbar, 
+#right-panel::-webkit-scrollbar, 
+.chip-grid::-webkit-scrollbar, 
+#chip-grid::-webkit-scrollbar, 
+.list-view::-webkit-scrollbar, 
+#list-view::-webkit-scrollbar {
+    display: none !important; 
+    width: 0 !important;
+    height: 0 !important;
 }

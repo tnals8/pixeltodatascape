@@ -420,7 +420,7 @@ rightPanel.addEventListener('scroll', () => {
         if (progress > 0.4) {
             // ✨ 40%를 넘어가면, 그때부터 끝까지 750px을 아주 스무스하게 끌어올립니다!
             // 750px이면 화면 밑에 숨어있던 비주얼 어플리케이션이 넉넉하게 다 올라옵니다.
-            yOffset = ((progress - 0.4) / 0.6) * 1300; 
+            yOffset = ((progress - 0.4) / 0.6) * 1200; 
         }
         
         dataContainer.style.transform = `translateY(-${yOffset}px)`;

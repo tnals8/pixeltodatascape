@@ -323,14 +323,14 @@ body {
     gap: 30px; /* 왼쪽 분류와 오른쪽 내용 사이 간격 */
     margin-bottom: 80px; /* 단계별 세로 간격 */
     width: 100%;
-    font-size: 11px;
+    font-size: 10px;
     line-height: 1.8;
 }
 
 /* 왼쪽 열: [ GEMINI INFERENCE_ ] 등 대분류 */
 .type-line b.title {
     flex: 0 0 160px; /* 왼쪽 열 너비 고정 */
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     color: var(--text-title);
     letter-spacing: 0.02em;
@@ -396,7 +396,7 @@ body {
 .data-container b.title { 
     font-size: 11px; /* 본문보다 살짝만 크게 하여 위계 유지 */
     display: block; 
-    margin-bottom: 12px; 
+    margin-bottom: 11px; 
     color: var(--text-title); 
     font-weight: 700; 
     letter-spacing: 0.02em;
@@ -530,7 +530,7 @@ body {
 .section-label {
     display: block;
     /* ✨ 폰트 크기를 기존보다 키우고, 굵게 처리합니다. */
-    font-size: 14px; 
+    font-size: 13px; 
     font-weight: 800; 
     
     /* ✨ 아카이브 특유의 기계적인 느낌을 위해 자간을 살짝 넓힙니다. */
@@ -543,7 +543,7 @@ body {
 
 /* 본문 텍스트는 가독성을 위해 크기를 유지합니다. */
 .about-text {
-    font-size: 12px;
+    font-size: 10.5px;
     line-height: 1.8;
     color: var(--text-main);
     opacity: 0.8;
@@ -640,7 +640,7 @@ body {
 /* 표 머리글 */
 .list-header {
     display: flex;
-    font-size: 10px;
+    font-size: 9.5px;
     color: var(--text-sub);
     border-bottom: 1px solid var(--text-title);
     padding-bottom: 10px;
@@ -657,7 +657,7 @@ body {
 .list-row {
     display: flex;
     align-items: flex-start;
-    font-size: 11px; /* ✨ 전체 글자 크기 11px로 통일 */
+    font-size: 10px; /* ✨ 전체 글자 크기 11px로 통일 */
     color: var(--text-main);
     padding: 16px 0;
     border-bottom: 1px solid var(--panel-border);
@@ -693,7 +693,7 @@ body {
 /* ✨ [System] 표 머리글: 원래의 '귀여운' 타자기 서체로 복구 */
 .list-header {
     display: flex;
-    font-size: 10px;
+    font-size: 9.5px;
     color: var(--text-sub);
     border-bottom: 1px solid var(--text-title);
     padding-bottom: 8px;
@@ -709,7 +709,7 @@ body {
 .list-row {
     display: flex;
     align-items: flex-start;
-    font-size: 11px; /* ✨ 전체 글자 크기 11px로 통일 */
+    font-size: 10px; /* ✨ 전체 글자 크기 11px로 통일 */
     color: var(--text-main);
     padding: 16px 0;
     border-bottom: 1px solid var(--panel-border);
@@ -751,7 +751,7 @@ position: relative;
 .col-keyword { 
     flex: 1.2; /* 기존 1.5에서 1.2로 깎아내서 글자들을 더 쫀쫀하게 모음 */
     color: var(--text-sub); 
-    font-size: 11px; 
+    font-size: 10px; 
     line-height: 1.5;
     word-break: keep-all; 
     

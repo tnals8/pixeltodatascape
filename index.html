@@ -3,36 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SATELLITE DATA ARCHIVE</title>
+    <title>PIXEL TO DATASCAPE</title>
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 </head>
 <body>
 <div id="site-info">
-        SATELLITE DATA ARCHIVE <span class="divider">/</span> v1.0 
-    </div>
+    PIXEL TO DATASCAPE <span class="divider">/</span> v1.0 
+</div>
 
     <div id="top-right-menu">
     <div class="menu-buttons">
         <button id="about-btn">[ ABOUT ]</button>
         <button id="source-btn">[ SOURCE ]</button>
-        <button id="theme-toggle">[ DARK_MODE ]</button>
-    </div>
+        <button id="view-toggle-btn">[ VIEW : LIST ]</button>
+</div>
 
     <div id="about-dropdown" class="dropdown-content">
         <div class="about-content">
             <section class="about-section">
-                <h2 class="section-label">[ 01. DEFINITION ]</h2>
-                <p class="about-text">본 아카이브는 인공위성의 거시적인 시점을 통해 포착된 지표면의 파편들을 수집하고, 그 안에서 추출된 색상과 시각적 구조를 데이터로 축적하는 관측 시스템이다. 위성 이미지가 지닌 기존의 지리적 맥락과 목적성을 의도적으로 거부하며, 대상을 색과 밀도, 패턴으로 구성된 순수한 감각적 요소의 집합으로 재구성하는 상태를 지향한다.</p>
+                <h2 class="section-label">[ DEFINITION ]</h2>
+                <p class="about-text">
+                    본 아카이브는 인공위성의 시점을 통해 포착된 지표면 이미지의 파편들을 '해상도(Resolution)'라는 축을 기준으로 해체하고 재구성하는 관측 시스템이다. 점진적인 해상도의 확장을 통해 위성 이미지가 지닌 기존의 지리적 맥락과 목적성에서 벗어나, 대상을 색과 밀도, 패턴으로 구성된 순수한 감각적 요소의 집합으로 재인식하는 것을 목표로 한다.
+                </p>
             </section>
+
             <section class="about-section">
-                <h2 class="section-label">[ 02. PROCESS ]</h2>
-                <p class="about-text">모든 관측 데이터는 Google Earth의 좌표계를 기반으로 한 엄격한 수집 프로토콜을 거친다. 수집된 특정 좌표의 이미지는 2:1 비율로 규격화되어 크롭(Crop)되며, 구체적인 지형의 형태 정보가 삭제된 채 해당 영역의 가장 지배적인 단일 색상(Color Chip)으로 압축된다.</p>
+                <h2 class="section-label">[ PROCESS ]</h2>
+                <p class="about-text">
+                    모든 관측 데이터는 이미지의 시각적 선명도가 높아짐에 따라 다음의 세 가지 정보적 해상도 단계로 분류되어 점진적으로 확장된다.<br><br>
+                    <b>1. Raw Data (최저 해상도) :</b> 구체적인 형태가 삭제되고 영역 내 가장 지배적인 단일 색상으로 압축된 데이터.<br>
+                    <b>2. Gemini Inference (중간 해상도) :</b> 어떠한 배경 정보 없이 시각적 단서만을 AI(Gemini)에게 제공했을 때 도출되는 가설적 추정 텍스트.<br>
+                    <b>3. Actual Data (최고 해상도) :</b> 정확한 좌표(Raw Data)를 기반으로 대상의 지리적, 구조적 정보를 완전히 해독해 낸 실제 데이터.
+                </p>
             </section>
+
             <section class="about-section">
-                <h2 class="section-label">[ 03. PERSPECTIVE ]</h2>
-                <p class="about-text">인간의 시점은 흔히 대상을 특정한 명칭이나 용도로 규정하려 한다. 그러나 위성의 시선으로 변환된 데이터는 대상을 설명하기보다 오히려 낯설게 인식하게 만드는 경험을 제안하며, 기술적 시선이 세상을 어떻게 분해하고 재조립하는지 목격하는 공간으로 기능한다.</p>
+                <h2 class="section-label">[ PERSPECTIVE ]</h2>
+                <p class="about-text">
+                    이 시스템은 관찰자가 데이터를 탐색하기 위해 스크롤(Scroll)하는 물리적 행위에 완벽하게 동기화되어 작동한다. 이미지가 단일 픽셀(색상)의 덩어리에서 구체적인 지형으로 선명해지는 시각적 해상도의 증가와 동시에, 불확실한 추정 단어들이 정교한 분석 텍스트로 변환되는 정보적 해상도의 증가가 평행하게 이루어진다.
+                </p>
             </section>
         </div>
     </div>
@@ -52,19 +63,27 @@
 </div>
 
             
- <div class="app-container" id="app">
-        <div id="nav-guide">
-            <!-- ✨ SELECT 대신 CLICK으로 명확하게 행동을 지시합니다. -->
-            <div class="guide-text">CLICK A COORDINATE</div>
-            
-            <div class="scroll-instruction" style="display: none; opacity: 0;">
-                SCROLL TO DECODE METADATA
-            </div>
-        </div>
+<div class="app-container" id="app">
+    <div id="nav-guide">
+        <div class="guide-text">CLICK A COORDINATE</div>
+        <div class="scroll-instruction">SCROLL TO DECODE METADATA</div>
+    </div>
 
-        <div class="left-panel">
-            <div class="chip-grid" id="chip-grid"></div>
-            <button id="theme-toggle">[ DARK_MODE ]</button>
+       <div class="left-panel" id="chip-grid-container">
+            <div id="chip-grid" class="chip-grid"></div>
+            
+            <div id="list-view" class="list-view" style="display: none;">
+               <div class="list-header">
+                    <span class="col-id">FILE_ID</span>
+                    <span class="col-coord">COORDINATES</span>
+                    <span class="col-date">DATE_CAPTURED</span>
+                    <span class="col-color">DOMINANT</span>
+                    <span class="col-palette">COLOR_SPEC</span> <span class="col-keyword">KEYWORDS</span>
+                </div>
+                
+                <div id="list-body">
+                    </div>
+            </div>
         </div>
 
         <div class="right-panel" id="right-panel">
@@ -81,14 +100,14 @@
                     <!-- ✨ 1. 위경도를 data-container 밖으로 빼냅니다! ✨ -->
                     <div id="text-coord" class="type-line coord-line"></div>
 
+                    
                     <div class="data-container">
-                        <!-- 여기는 3개만 남습니다 -->
                         <div id="text-raw" class="type-line"></div>
                         <div id="text-gemini" class="type-line"></div>
                         <div id="text-actual" class="type-line"></div>
+                        <div id="text-visual" class="type-line"></div>
                     </div>
                     
-                    <!-- ✨ 4. 꼬여있던 인디케이터 구조 수정 -->
                     <div id="v-indicator">
                         <div class="v-line">
                             <div class="v-dot" id="v-d1"></div>
@@ -97,11 +116,6 @@
                             <div class="v-dot" id="v-d4"></div>
                         </div>
                     </div>
-                </div> <!-- text-section 닫기 -->
-            </div> <!-- fixed-viewport 닫기 -->
-        </div> <!-- right-panel 닫기 -->
-    </div> <!-- app-container 닫기 -->
-
-    <script src="script.js"></script>
+                </div> </div> </div> </div> <script src="script.js"></script>
 </body>
 </html>

@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PIXEL TO DATASCAPE</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='38' y='42' width='52' height='52' fill='%23111111'/%3E%3Crect x='22' y='26' width='34' height='34' fill='%23777777'/%3E%3Crect x='12' y='14' width='20' height='20' fill='%23bbbbbb'/%3E%3C/svg%3E">
     <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;500&display=swap" rel="stylesheet">
 </head>
 <body>
 <div id="site-info">
@@ -17,7 +21,7 @@
     <div class="menu-buttons">
         <button id="about-btn">[ ABOUT ]</button>
         <button id="source-btn">[ SOURCE ]</button>
-        <button id="view-toggle-btn">[ VIEW : LIST ]</button>
+        <button id="view-toggle-btn">[ VIEW : LOG ]</button>
 </div>
 
     <div id="about-dropdown" class="dropdown-content">
@@ -84,11 +88,30 @@
                 <div id="list-body">
                     </div>
             </div>
+
+            <!-- ✨ LOG 뷰: 관찰자가 수집한 색들의 팔레트 (방문 기록) -->
+            <div id="log-view" class="log-view" style="display: none;">
+                <div class="log-meta">
+                    <span class="log-title">[ OBSERVATION LOG ]</span>
+                    <span class="log-count" id="log-count">COLLECTED : 0</span>
+                    <button id="print-btn" class="print-btn">[ PRINT ]</button>
+                </div>
+                <div class="log-table-header">
+                    <span class="lc-idx">NO.</span>
+                    <span class="lc-id">FILE_ID</span>
+                    <span class="lc-coord">COORDINATES</span>
+                    <span class="lc-color">DOMINANT</span>
+                    <span class="lc-time">TIME</span>
+                    <span class="lc-keyword">KEYWORDS</span>
+                </div>
+                <div id="log-body" class="log-body">
+                    <div class="log-empty" id="log-empty">아직 관측 기록이 없습니다. 좌표를 클릭해 색을 수집하세요.</div>
+                </div>
+            </div>
         </div>
 
         <div class="right-panel" id="right-panel">
             <button class="close-btn" id="close-btn"></button>
-            <div class="scroll-track"></div>
 
             <div class="fixed-viewport">
                 <div class="image-section">
@@ -116,6 +139,18 @@
                             <div class="v-dot" id="v-d4"></div>
                         </div>
                     </div>
-                </div> </div> </div> </div> <script src="script.js"></script>
+                </div> <!-- /text-section -->
+            </div> <!-- /fixed-viewport -->
+
+            <!-- ✨ 스크롤 거리를 만드는 트랙: viewport 뒤에 와야 sticky가 올바르게 동작 -->
+            <div class="scroll-track"></div>
+        </div> <!-- /right-panel -->
+    </div> <!-- /app-container -->
+
+    <!-- ✨ 프린트 전용 출력 영역 (평소 숨김, PRINT 시 JS가 채움) -->
+    <div id="print-output" class="print-output"></div>
+
+    <script src="script.js"></script>
+    <script src="specimen-print.js"></script>
 </body>
 </html>

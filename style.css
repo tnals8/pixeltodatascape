@@ -15,6 +15,9 @@
     --coord-bg: var(--bg-right);
     --dot-color: rgba(0, 0, 0, 0.2);
     --dot-active: #000000;
+    /* 서체 (영문=MozillaHeadline-Light, 한글=Noto 자동 폴백). 폰트 바꾸려면 이 두 줄만 수정 */
+    --font-mono: 'MozillaHeadline-Light', 'Mozilla Headline', 'Noto Sans KR', sans-serif;
+    --font-kr: 'MozillaHeadline-Light', 'Mozilla Headline', 'Noto Sans KR', sans-serif;
 }
 
 body.dark-mode {
@@ -34,7 +37,7 @@ body.dark-mode {
 body { 
     background-color: var(--bg-left); 
     color: var(--text-main);
-    font-family: 'Noto Sans KR', sans-serif; 
+    font-family: var(--font-kr); 
     overflow: hidden; 
     transition: background-color 0.5s ease, color 0.5s ease;
 }
@@ -144,6 +147,18 @@ body {
     box-shadow: none;
 }
 
+/* style.css에 추가 */
+.mini-chip.visited {
+    /* 방문한 칩은 살짝 흐리게 만들어 깊이감을 줍니다 */
+    opacity: 0.7; 
+    
+    /* 테두리를 실선 대신 '점선'으로 변경하여 튀지 않게 구분 */
+    border: 2px dashed rgba(255, 255, 255, 0.6); 
+    
+    /* 살짝 안으로 들어간 느낌을 주면 '눌렀다 뗌'의 느낌이 납니다 */
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+}
+
 /* 5. 활성화된 칩 옆의 라벨(텍스트) 상태 */
 .mini-chip.active + .chip-label,
 .chip-package.active .chip-label {
@@ -157,7 +172,7 @@ body {
     opacity: 0.35; 
     transition: opacity 0.3s ease, color 0.5s ease; 
     position: absolute; left: 100%; top: 50%; transform: translateY(-50%); margin-left: 8px; flex-direction: column; 
-    font-family: 'Courier Prime', Courier, monospace; font-size: 8px; font-weight: 500; 
+    font-family: var(--font-mono); font-size: 8px; font-weight: 500; 
     color: var(--text-main); 
     line-height: 1.1; pointer-events: none;
 }
@@ -239,7 +254,7 @@ body {
 /* ✨ 상단 시스템 정보 */
 #site-info {
     position: fixed; top: 20px; left: 20px;
-    font-family: 'Courier Prime', monospace; font-size: 11px;
+    font-family: var(--font-mono); font-size: 11px;
     z-index: 1000; color: var(--text-main); opacity: 0.7;
 }
 #site-info .divider { margin: 0 5px; opacity: 0.5; }
@@ -262,7 +277,7 @@ body {
 
 .guide-text, .scroll-instruction {
     font-size: 10px; color: var(--text-sub); letter-spacing: 2px;
-    font-family: 'Courier Prime', monospace;
+    font-family: var(--font-mono);
     animation: bounce 2s infinite;
 }
 
@@ -301,7 +316,7 @@ body {
     padding: 19px 120px 12px 60px; 
     margin-bottom: 0; 
     border-bottom: 0.5px solid var(--panel-border); 
-    font-family: 'Courier Prime', monospace; 
+    font-family: var(--font-mono); 
     transition: background-color 0.5s ease;
     font-size: 13px;
 }
@@ -310,7 +325,6 @@ body {
 .data-container { 
     padding: 100px 120px 100px 60px; 
     pointer-events: auto; 
-    transition: transform 0.1s linear; 
 }
 
 /* ---------------------------------------------------
@@ -343,9 +357,9 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 12px; /* 하위 항목간 간격 */
+    gap: 18px; /* 항목(그룹) 간 간격 */
     color: var(--text-main);
-    font-family: 'Noto Sans KR', sans-serif;
+    font-family: var(--font-kr);
     /* ✨ [핵심] 한글 단어가 중간에 끊기지 않고 어절 단위로 줄바꿈되도록 설정 */
     word-break: keep-all; 
     /* ✨ 혹시나 띄어쓰기 없는 아주 긴 영문이나 숫자가 레이아웃을 뚫고 나가는 것을 방어 */
@@ -489,7 +503,7 @@ body {
     background: transparent;
     border: none;
     color: var(--text-sub);
-    font-family: 'Courier Prime', monospace;
+    font-family: var(--font-mono);
     font-size: 11px;
     cursor: pointer;
     padding: 0;
@@ -551,13 +565,16 @@ body {
 }
 
 /* 1. 망가진 속도감 완벽 복구 (1200vh 고정!) */
+/* ✨ position:absolute였을 때는 부모(#right-panel)의 스크롤 높이를 만들지 못해
+   패널 안에서 스크롤이 거의 안 됐다. 일반 흐름(static)으로 두어
+   이 1200vh가 실제 스크롤 거리가 되도록 한다.
+   (z-index:-1 + pointer-events:none 이라 화면/클릭엔 영향 없음) */
 .scroll-track {
     width: 100%;
     height: 1200vh !important; /* ✨ 수민님이 가장 마음에 들어 하셨던 그 속도입니다 */
-    position: absolute;
-    top: 0;
-    left: 0;
+    position: relative;
     z-index: -1;
+    pointer-events: none;
 }
 
 /* 2. 화면이 위로 더 밀려 올라가지(덜 내려가게) 않도록 뷰포트 크기 꽉 묶기 */
@@ -627,7 +644,7 @@ body {
     width: 100%;
     padding: 80px 40px 40px 40px; 
     /* ✨ 기본 서체는 내용(Content)을 위해 노토산스로 설정 */
-    font-family: 'Noto Sans KR', sans-serif;
+    font-family: var(--font-kr);
     font-weight: 300;
 }
 
@@ -648,7 +665,7 @@ body {
     letter-spacing: 1px;
     
     /* 타자기 서체 적용 */
-    font-family: 'Courier Prime', monospace;
+    font-family: var(--font-mono);
     font-weight: 700; 
 }
 
@@ -665,7 +682,7 @@ body {
     transition: background 0.2s ease, padding-left 0.2s ease;
     
     /* 데이터 내용은 노토산스로 출력 */
-    font-family: 'Noto Sans KR', sans-serif;
+    font-family: var(--font-kr);
 }
 /* 마우스 올렸을 때 효과 */
 .list-row:hover {
@@ -686,7 +703,7 @@ body {
     /* 순서: 위(80px) 오른쪽(100px) 아래(40px) 왼쪽(100px) */
     padding: 80px 100px 40px 100px; 
     
-    font-family: 'Noto Sans KR', sans-serif;
+    font-family: var(--font-kr);
     font-weight: 300;
 }
 
@@ -701,7 +718,7 @@ body {
     letter-spacing: 1px;
     
     /* 타자기 서체 적용 */
-    font-family: 'Courier Prime', monospace;
+    font-family: var(--font-mono);
     font-weight: 700; 
 }
 
@@ -717,7 +734,7 @@ body {
     transition: background 0.2s ease, padding-left 0.2s ease;
     
     /* 데이터 내용은 노토산스로 출력 */
-    font-family: 'Noto Sans KR', sans-serif;
+    font-family: var(--font-kr);
 }
 /* ✨ 6개 열(Column) 비율 재조정 */
 /* ✨ 파일명 가로폭 살짝 줄임 */
@@ -836,6 +853,9 @@ position: relative;
     border-top: 1px solid transparent; 
     padding-top: 24px !important; 
     margin-top: 24px !important;  
+    /* 구분선을 좌우로 살짝 연장 (내용 위치는 패딩으로 보정해 그대로 유지) */
+    margin-left: -24px; margin-right: -64px;
+    padding-left: 24px; padding-right: 64px;
     
     /* ✨ 선이 스르륵 나타나도록 부드러운 애니메이션 추가 */
     transition: border-color 0.4s ease; 
@@ -884,3 +904,369 @@ position: relative;
     width: 0 !important;
     height: 0 !important;
 }
+
+/* =========================================
+   ✨ 패널 열림(split-mode) 시 리스트 뷰 컬럼 보정
+   - 100vw 기준으로 박아둔 절대 수치(left, padding)들을 0으로 되돌려
+     50vw 좁은 폭에서도 컬럼이 겹치지 않게 만든다.
+   - 기존 규칙은 그대로 두고 여기서만 덮어쓴다.
+   ========================================= */
+/* 좁아진 폭에 맞춰 양옆 여백을 줄임 */
+.split-mode .list-view {
+    padding: 80px 40px 40px 40px !important;
+}
+
+/* 머리글도 행과 같은 비율로 정렬되도록 flex 컬럼 사용 */
+.split-mode .list-header > span,
+.split-mode .list-row > div {
+    overflow: hidden;
+}
+
+/* 각 컬럼: 절대 위치 보정값 제거 + 비율 재조정 */
+.split-mode .col-id {
+    flex: 1 !important;
+    padding-right: 40px !important;
+}
+.split-mode .col-coord {
+    flex: 1.4 !important;
+    padding-left: 0 !important;
+    padding-right: 12px !important;
+}
+.split-mode .col-date {
+    flex: 1 !important;
+    left: 0 !important;
+    padding-right: 12px !important;
+}
+.split-mode .col-color {
+    flex: 0.9 !important;
+    left: 0 !important;
+}
+.split-mode .col-palette {
+    flex: 0.8 !important;
+    left: 0 !important;
+}
+.split-mode .col-keyword {
+    flex: 1.1 !important;
+    padding-left: 12px !important;
+}
+/* =========================================================
+   ✨ OBSERVATION LOG — 수집한 색 팔레트 (방문 기록) 화면
+   ========================================================= */
+.log-view {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 80px 60px 60px 80px;
+    overflow-y: auto;
+    font-family: var(--font-mono);
+    color: #1a1a1a;
+}
+.log-view::-webkit-scrollbar { display: none; width: 0; height: 0; }
+
+.log-meta {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding-bottom: 20px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid #c9c9c9;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+}
+.log-title { font-weight: 700; }
+.log-count { color: #888; }
+.print-btn {
+    margin-left: auto;
+    background: none;
+    border: 1px solid #1a1a1a;
+    color: #1a1a1a;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.print-btn:hover { background: #1a1a1a; color: #f4f4f4; }
+
+.log-empty {
+    color: #aaa;
+    font-size: 13px;
+    padding: 40px 0;
+    font-family: var(--font-kr);
+}
+
+/* 표 헤더 */
+.log-table-header {
+    display: flex;
+    align-items: center;
+    padding: 0 0 10px 0;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #c9c9c9;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: #888;
+    white-space: nowrap;
+}
+
+/* 각 관측 = 표 한 줄 */
+.log-row {
+    display: flex;
+    align-items: center;
+    height: 44px;
+    border-bottom: 1px solid #e2e2e2;
+    font-size: 12px;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    cursor: pointer;
+    opacity: 0;
+    animation: logFadeIn 0.4s ease forwards;
+    transition: background 0.15s ease;
+}
+.log-row:hover { background: rgba(0,0,0,0.04); }
+@keyframes logFadeIn { to { opacity: 1; } }
+
+/* 컬럼 폭 (헤더와 행이 같은 비율을 공유) */
+.lc-idx     { flex: 0 0 48px; color: #bbb; font-weight: 700; }
+.lc-id      { flex: 2; overflow: hidden; text-overflow: ellipsis; padding-right: 16px; }
+.lc-coord   { flex: 1.6; padding-right: 16px; }
+.lc-color   { flex: 1.2; display: flex; align-items: center; gap: 10px; }
+.lc-time    { flex: 1; color: #aaa; }
+.lc-keyword { flex: 1.4; overflow: hidden; text-overflow: ellipsis; color: #666; }
+
+.log-swatch {
+    width: 22px; height: 22px;
+    flex-shrink: 0;
+    border: 1px solid rgba(0,0,0,0.15);
+}
+.lc-hex { color: #555; text-transform: uppercase; font-size: 11px; }
+
+/* =========================================================
+   ✨ PRINT OUTPUT — 관측 세션 보고서
+   구조: 표지 → [간지 PART I·RAW] 색칩 격자
+                → [간지 PART II·INFERENCE] 거친 입자
+                → [간지 PART III·ACTUAL] 항목별 상세
+   "페이지 넘김 = 해독" : 각 부에서 좌표는 같은 순번을 유지
+   ========================================================= */
+.print-output { display: none; }
+.p-loading { font-family: var(--font-mono); padding: 40px; }
+
+@media print {
+    /* ───────────── 1. A3 가로 (420×297mm) ───────────── */
+    @page { size: A3 landscape; margin: 0; }
+
+    #site-info, #top-right-menu, .right-panel, #nav-guide,
+    .chip-grid, #chip-grid, .list-view, .log-view, .app-container {
+        display: none !important;
+    }
+    html, body {
+        background: #fff !important; margin: 0 !important; padding: 0 !important;
+        width: 420mm !important;
+    }
+    .print-output {
+        display: block !important;
+        font-family: var(--font-mono); color: #111;
+        -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+    }
+
+    /* ───────────── 2. 페이지 (시트 크기는 JS가 인라인/@page로 동적 지정) ───────────── */
+    .p-snake-page {
+        page-break-after: always;
+        position: relative;
+        overflow: hidden;          /* 블리드는 타일 단위로만, 페이지 밖으로는 안 나가게 */
+        background: #fff;
+        box-sizing: border-box;
+        display: flex;             /* 격자를 시트 중앙에 배치, 사방에 여백 띠 */
+        align-items: center;
+        justify-content: center;
+    }
+    .p-snake-page:last-child { page-break-after: auto; }
+
+    /* 앞뒤 정합 코너 마크 (양면 인쇄 등록용) */
+    .p-reg {
+        position: absolute; width: 8mm; height: 8mm; z-index: 50;
+        pointer-events: none;
+    }
+    .p-reg-tl { top: 5mm; left: 5mm; border-top: 0.5pt solid #000; border-left: 0.5pt solid #000; }
+    .p-reg-tr { top: 5mm; right: 5mm; border-top: 0.5pt solid #000; border-right: 0.5pt solid #000; }
+    .p-reg-bl { bottom: 5mm; left: 5mm; border-bottom: 0.5pt solid #000; border-left: 0.5pt solid #000; }
+    .p-reg-br { bottom: 5mm; right: 5mm; border-bottom: 0.5pt solid #000; border-right: 0.5pt solid #000; }
+
+    /* ───────────── 3. 헤더 (상단 여백 띠에 오버레이) ───────────── */
+    .p-snake-header {
+        position: absolute; z-index: 10;
+        top: 4mm; left: 14mm; right: 14mm;
+        display: flex; justify-content: space-between;
+        font-family: var(--font-mono);
+        font-size: 7pt; font-weight: 700;
+        letter-spacing: 0.05em; text-transform: uppercase;
+        line-height: 1.4;
+    }
+
+    /* ───────────── 4. 경로 격자 (플렉스로 중앙정렬) ───────────── */
+    .p-snake-grid { position: relative; flex: none; }
+
+    /* ───────────── 5. 타일 공통 ───────────── */
+    .stile { position: absolute; box-sizing: border-box; }
+
+    /* =====================================================================
+       FRONT (이미지면) — 풀블리드. 이미지 위에 접기선을 긋지 않는다.
+       · cut 변(실루엣/재단)으로만 이미지를 3mm 흘려보내 블리드 확보
+       · 접기선/산골 표기는 전부 뒷면(BACK)으로. 스코어링은 뒷면에서.
+       ===================================================================== */
+    .stile:not(.stile-text) { overflow: visible; }
+    /* 이미지를 사방 +3mm 키워 깔고, 노출 범위는 JS의 clip-path로 제어.
+       cut 변 → 3mm 블리드 노출 / fold 변 → 타일 경계에서 정확히 클립(이웃 침범 방지) */
+    .stile:not(.stile-text) img {
+        position: absolute; top: -3mm; left: -3mm;
+        width: calc(100% + 6mm); height: calc(100% + 6mm);
+        object-fit: cover; display: block;
+        -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+    }
+
+    /* 앞면 재단선: 헤어라인(잘려나갈 외곽에만). 접기 변엔 선 없음 */
+    .stile:not(.stile-text)::after {
+        content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 3;
+    }
+    .stile[data-et="cut"]:not(.stile-text)::after { border-top: 0.5pt solid rgba(0,0,0,0.55); }
+    .stile[data-er="cut"]:not(.stile-text)::after { border-right: 0.5pt solid rgba(0,0,0,0.55); }
+    .stile[data-eb="cut"]:not(.stile-text)::after { border-bottom: 0.5pt solid rgba(0,0,0,0.55); }
+    .stile[data-el="cut"]:not(.stile-text)::after { border-left: 0.5pt solid rgba(0,0,0,0.55); }
+
+    .stile-idx {
+        position: absolute; top: 2mm; left: 3mm; z-index: 4;
+        font-family: var(--font-mono);
+        font-size: 7pt; font-weight: 700;
+        color: #fff; text-shadow: 0 0 3px rgba(0,0,0,0.7);
+    }
+
+    /* =====================================================================
+       BACK (데이터면) — 조립 마스터. 모든 선을 여기 인쇄.
+       재단 = 실선 / 골(VALLEY) = 파선 / 산(MOUNTAIN) = 점선
+       (border-style는 dash-dot이 없어 산을 dotted로 표기 — 범례 명시)
+       ===================================================================== */
+    .stile-text { background: #fff; overflow: hidden; }
+
+    .stile-text[data-et="cut"]    { border-top: 0.5pt solid rgba(0,0,0,0.45); }
+    .stile-text[data-er="cut"]    { border-right: 0.5pt solid rgba(0,0,0,0.45); }
+    .stile-text[data-eb="cut"]    { border-bottom: 0.5pt solid rgba(0,0,0,0.45); }
+    .stile-text[data-el="cut"]    { border-left: 0.5pt solid rgba(0,0,0,0.45); }
+
+    .stile-text[data-et="fold-v"] { border-top: 0.5pt dashed rgba(0,0,0,0.42); }
+    .stile-text[data-er="fold-v"] { border-right: 0.5pt dashed rgba(0,0,0,0.42); }
+    .stile-text[data-eb="fold-v"] { border-bottom: 0.5pt dashed rgba(0,0,0,0.42); }
+    .stile-text[data-el="fold-v"] { border-left: 0.5pt dashed rgba(0,0,0,0.42); }
+
+    .stile-text[data-et="fold-m"] { border-top: 0.5pt dotted rgba(0,0,0,0.45); }
+    .stile-text[data-er="fold-m"] { border-right: 0.5pt dotted rgba(0,0,0,0.45); }
+    .stile-text[data-eb="fold-m"] { border-bottom: 0.5pt dotted rgba(0,0,0,0.45); }
+    .stile-text[data-el="fold-m"] { border-left: 0.5pt dotted rgba(0,0,0,0.45); }
+
+    /* ───────────── 6. 풀칠 시접 (GLUE TAB) ───────────── */
+    .glue-tab {
+        position: absolute; box-sizing: border-box; z-index: 1;
+        background: repeating-linear-gradient(45deg, rgba(0,0,0,0.45) 0 0.3mm, transparent 0.3mm 1.7mm);
+        border: 0.5pt solid rgba(0,0,0,0.45);
+        -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+    }
+    /* 접는 자리(패널과 만나는 안쪽 변)을 파선으로 — 여기서 접어 뒤로 넘겨 풀칠 */
+    .glue-tab.glue-right  { border-left: 0.5pt dashed rgba(0,0,0,0.45); }
+    .glue-tab.glue-bottom { border-top:  0.5pt dashed rgba(0,0,0,0.45); }
+    .glue-tab::after { display: none; }
+
+    /* ───────────── 7. 뒷면 텍스트 ───────────── */
+    .st-content {
+        width: 100%; height: 100%;
+        padding: 3mm 4mm; box-sizing: border-box;
+        display: flex; flex-direction: column;
+        justify-content: space-between; overflow: hidden;
+    }
+    .st-head {
+        font-family: var(--font-mono);
+        font-size: 6pt; font-weight: 700;
+        letter-spacing: 0.03em; line-height: 1.3; color: #111;
+    }
+    .st-body {
+        font-family: var(--font-kr);
+        font-size: 5.5pt; line-height: 1.5; color: #333;
+        word-break: keep-all; flex: 1 1 auto; overflow: hidden; margin-top: 1.5mm;
+    }
+    .st-body b {
+        font-family: var(--font-mono);
+        font-size: 5.5pt; display: block;
+        margin-top: 1.5mm; margin-bottom: 0.5mm; color: #111;
+    }
+    .st-colors {
+        font-family: var(--font-mono);
+        font-size: 5pt; color: #555; margin-top: 1mm; line-height: 1.4;
+    }
+    .st-colors b { display: block; margin-bottom: 0.5mm; font-size: 5.5pt; color: #111; }
+    .st-sw {
+        display: inline-block; width: 3mm; height: 2mm;
+        border: 0.2pt solid rgba(0,0,0,0.3);
+        vertical-align: middle; margin: 0 1mm 0 0;
+        -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+    }
+    .st-kw {
+        font-family: var(--font-mono);
+        font-size: 5pt; color: #555; margin-top: 1mm;
+    }
+    .st-kw b { display: block; margin-bottom: 0.3mm; font-size: 5.5pt; color: #111; }
+
+    /* ───────────── 8. 범례 (하단 여백 띠) ───────────── */
+    .p-snake-legend {
+        position: absolute; z-index: 10;
+        bottom: 4mm; left: 14mm; right: 14mm;
+        display: flex; flex-wrap: wrap; align-items: center; gap: 2mm 7mm;
+        font-family: var(--font-mono);
+        font-size: 7pt; color: #222; letter-spacing: 0.02em;
+    }
+    .p-snake-legend .leg-item { display: inline-flex; align-items: center; gap: 1.6mm; }
+    .p-snake-legend .leg-line { display: inline-block; width: 11mm; height: 0; }
+    .p-snake-legend .leg-cut { border-top: 0.5mm solid #111; }
+    .p-snake-legend .leg-valley { border-top: 0.5mm dashed #111; }
+    .p-snake-legend .leg-mountain { border-top: 0.9mm dotted #111; }
+    .p-snake-legend .leg-glue { display: inline-block; width: 7mm; height: 4mm; border: 0.4mm solid #111;
+        background: repeating-linear-gradient(45deg, #111 0 0.4mm, transparent 0.4mm 1.8mm); }
+    .p-snake-legend .leg-note { color: #999; font-size: 6pt; flex-basis: 100%; }
+
+    /* ───────────── 9. 빈 패널 (직사각형 완성용) ───────────── */
+    .stile-blank { background: #fff; }
+    .stile-idx-blank { color: rgba(0,0,0,0.25) !important; text-shadow: none !important; }
+
+    /* ───────────── 10. A3 분할(이어붙이기) 모드 ───────────── */
+    .p-block { position: absolute; overflow: visible; }
+    .p-sheet-meta {
+        position: absolute; z-index: 10;
+        top: 5mm; left: 12mm; right: 12mm;
+        display: flex; justify-content: space-between; align-items: flex-start;
+        font-family: var(--font-mono);
+        font-size: 7pt; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .p-minimap { display: grid; gap: 0.6mm; }
+    .p-mm-cell {
+        width: 3.2mm; height: 2.4mm; box-sizing: border-box;
+        border: 0.3pt solid #aaa;
+        -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+    }
+    .p-mm-cell.has { border-color: #555; }
+    .p-mm-cell.on { background: #111; border-color: #111; }
+    /* 정렬틱: 블록 경계 패널마다 바깥으로 뻗는 짧은 선 */
+    .p-tick-v { position: absolute; border-left: 0.5pt solid rgba(0,0,0,0.45); margin-left: -0.5pt; }
+    .p-tick-h { position: absolute; border-top: 0.5pt solid rgba(0,0,0,0.45); margin-top: -0.5pt; }
+    /* 인접 시트 라벨 */
+    .p-join {
+        position: absolute; z-index: 10;
+        font-family: var(--font-mono);
+        font-size: 6pt; font-weight: 700; color: #555;
+        letter-spacing: 0.08em; white-space: nowrap;
+    }
+}
+/* === 우측 패널 텍스트 정돈 (라벨+값 그룹화 / 메타데이터 키-값 정렬) === */
+.content-wrapper .field { display: flex; flex-direction: column; gap: 4px; }
+.content-wrapper .field > b { margin-top: 0 !important; margin-bottom: 0 !important; }
+.content-wrapper .field > .v { font-size: 11px; line-height: 1.7; color: var(--text-main); }
+.content-wrapper .kv-rows { display: flex; flex-direction: column; gap: 7px; }
+.content-wrapper .kv { display: flex; gap: 12px; font-size: 11px; line-height: 1.5; align-items: baseline; }
+.content-wrapper .kv > .k { flex: 0 0 132px; font-size: 9.5px; font-weight: 700; letter-spacing: .04em; color: var(--text-title); opacity: .55; }
+.content-wrapper .kv > .v { flex: 1; color: var(--text-main); word-break: break-all; }

@@ -64,6 +64,25 @@
   .spec-color .hd  { font-size: 8pt; font-weight: 600; color: #111; letter-spacing: .02em; }
   .spec-color .hd .sw { display: inline-block; width: 3mm; height: 3mm; vertical-align: -.3mm; margin-right: 1.4mm; border: .2mm solid #111; }
   .spec-color .val { font-weight: 300; font-size: 7pt; line-height: 1.6; color: #111; letter-spacing: .01em; margin-top: 1.2mm; }
+  /* 왼쪽 아래 4색 팔레트 (위치 노브: left/bottom/width) */
+  .spec-palette { position: absolute; left: 10mm; bottom: 7mm; width: 40mm; z-index: 6; }
+  .spec-palette .hd { font-size: 8pt; font-weight: 600; color: #111; letter-spacing: .02em; margin-bottom: 2mm; }
+  .spec-palette .row { display: flex; align-items: center; font-size: 7pt; font-weight: 300; line-height: 1.6; color: #111; margin-bottom: 1mm; }
+  .spec-palette .sw { display: inline-block; width: 3mm; height: 3mm; border: .2mm solid #111; margin-right: 1.8mm; flex: 0 0 auto; }
+  .spec-palette .pl { flex: 0 0 16mm; letter-spacing: .02em; }
+  .spec-palette .ph { letter-spacing: .01em; }
+  /* 뒷면 ACTUAL DATA (트림 영역 안, 가로 읽기) */
+  .spec-card.back { font-family: var(--font-kr, 'Noto Sans KR', sans-serif); }
+  /* 뒷면 헤더/본문 분리 — 코너 기준 회전.
+     left = 세로열의 왼쪽 x(키우면 오른쪽), top = 읽기 시작점(아래) y(줄이면 위로) */
+  .spec-back-head, .spec-back-body { position: absolute; transform-origin: left top; transform: rotate(-90deg); color: #111; }
+  .spec-back-head { left: 62mm; top: 240mm; white-space: nowrap;
+    font-size: 9pt; font-weight: 600; letter-spacing: .04em; }            /* ◀ ACTUAL DATA */
+  .spec-back-body { left: 62mm; top: 200mm; width: 138mm; }               /* ◀ 본문 (top↓=위로) */
+  .spec-back-body .sec { margin-bottom: 4mm; }
+  .spec-back-body .sec:last-child { margin-bottom: 0; }
+  .spec-back-body .lbl { display: block; font-size: 8pt; font-weight: 600; letter-spacing: .03em; margin-bottom: 1.5mm; }
+  .spec-back-body .txt { display: block; font-size: 8pt; font-weight: 300; line-height: 1.7; word-break: keep-all; }
 
   /* 분석 텍스트 : 세로짜기 대신 '눕힌' 가로 텍스트박스 */
   .spec-vtext { position: absolute; top: 66mm; height: 210mm; width: 48mm; z-index: 6; overflow: hidden; }
@@ -136,7 +155,7 @@
   }
 
   /* ───────────────── 3) 선 SVG (절취선·재단 크롭마크) — A4(210×297) ───────────────── */
-  function cutSVG() {
+  function cutSVG(back) {
     const W = 210, H = 297, bleed = 2, tw = 100, th = 200;
     const iw = tw + 2*bleed, ih = th + 2*bleed;                          // 108 × 212
     const ix = (W - iw)/2, iy = (H - ih)/2, ex = ix + iw, ey = iy + ih;  // 51 · 42.5 · 159 · 254.5
@@ -147,12 +166,19 @@
              `<line x1="${cx}" y1="${cy+vy*coff}" x2="${cx}" y2="${cy+vy*(coff+clen)}"/>`;
     };
     const marks = crop(tx,ty,-1,-1) + crop(trx,ty,1,-1) + crop(tx,tby,-1,1) + crop(trx,tby,1,1);
+    // 앞면: 트림(이미지) 구간은 비우고 여백에만 절취선. 뒷면(back=true): 트림을 가로질러 끝까지 이어진 점선.
+    const tears = back
+      ? `<line x1="${tx}"  y1="${SAFE}" x2="${tx}"  y2="${H-SAFE}"/>` +
+        `<line x1="${trx}" y1="${SAFE}" x2="${trx}" y2="${H-SAFE}"/>` +
+        `<line x1="${SAFE}" y1="${ty}"  x2="${W-SAFE}" y2="${ty}"/>` +
+        `<line x1="${SAFE}" y1="${tby}" x2="${W-SAFE}" y2="${tby}"/>`
+      : `<line x1="${tx}"  y1="${SAFE}" x2="${tx}"  y2="${iy}"/><line x1="${tx}"  y1="${ey}" x2="${tx}"  y2="${H-SAFE}"/>` +
+        `<line x1="${trx}" y1="${SAFE}" x2="${trx}" y2="${iy}"/><line x1="${trx}" y1="${ey}" x2="${trx}" y2="${H-SAFE}"/>` +
+        `<line x1="${SAFE}" y1="${ty}"  x2="${ix}" y2="${ty}"/><line x1="${ex}" y1="${ty}"  x2="${W-SAFE}" y2="${ty}"/>` +
+        `<line x1="${SAFE}" y1="${tby}" x2="${ix}" y2="${tby}"/><line x1="${ex}" y1="${tby}" x2="${W-SAFE}" y2="${tby}"/>`;
     return `<svg class="spec-cut" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
       <g stroke="#111" stroke-width="0.2" stroke-dasharray="0.15 1.7" stroke-linecap="round">
-        <line x1="${tx}"  y1="${SAFE}" x2="${tx}"  y2="${iy}"/><line x1="${tx}"  y1="${ey}" x2="${tx}"  y2="${H-SAFE}"/>
-        <line x1="${trx}" y1="${SAFE}" x2="${trx}" y2="${iy}"/><line x1="${trx}" y1="${ey}" x2="${trx}" y2="${H-SAFE}"/>
-        <line x1="${SAFE}" y1="${ty}"  x2="${ix}" y2="${ty}"/><line x1="${ex}" y1="${ty}"  x2="${W-SAFE}" y2="${ty}"/>
-        <line x1="${SAFE}" y1="${tby}" x2="${ix}" y2="${tby}"/><line x1="${ex}" y1="${tby}" x2="${W-SAFE}" y2="${tby}"/>
+        ${tears}
       </g>
       <g stroke="#111" stroke-width="0.25">${marks}</g>
     </svg>`;
@@ -173,7 +199,27 @@
     if (e.designation) cats.push(`<div class="vt-sec"><span class="vt-lbl">■ DESIGNATION</span>${strip(e.designation)}</div>`);
     if (e.topo)        cats.push(`<div class="vt-sec"><span class="vt-lbl">■ TOPOGRAPHICAL</span>${strip(e.topo)}</div>`);
     const analysis = cats.join('') || `<div class="vt-sec">${strip(e.keywords)}</div>`;
-    return `<div class="spec-card ${side}">
+    // 왼쪽 아래: 4색 팔레트 (Primary/Secondary/Accent/Shadow). hex 없으면 해당 줄/블록 자동 생략.
+    const palHex = function (v) { const m = (v || '').match(/#([0-9A-F]{6})/i); return m ? m[0].toUpperCase() : null; };
+    const palRows = [['Primary', e.colPrimary], ['Secondary', e.colSecondary], ['Accent', e.colAccent], ['Shadow', e.colShadow]]
+      .map(function (p) { const h = palHex(p[1]); return h ? `<div class="row"><span class="sw" style="background:${h}"></span><span class="pl">${p[0]}</span><span class="ph">${h}</span></div>` : ''; })
+      .join('');
+    const palette = palRows ? `<div class="spec-palette"><div class="hd">COLOR SPEC</div>${palRows}</div>` : '';
+
+    /* 뒷면: ACTUAL DATA만 (트림/이미지 영역 안에 가로로 읽기 쉽게) + 재단·절취선 */
+    if (side === 'back') {
+      return `<div class="spec-card back">
+      ${cutSVG(true)}
+      <div class="spec-back-head">ACTUAL DATA</div>
+      <div class="spec-back-body">
+        ${e.designation ? `<div class="sec"><span class="lbl">■ DESIGNATION</span><span class="txt">${strip(e.designation)}</span></div>` : ''}
+        ${e.topo ? `<div class="sec"><span class="lbl">■ TOPOGRAPHICAL</span><span class="txt">${strip(e.topo)}</span></div>` : ''}
+      </div>
+    </div>`;
+    }
+
+    /* 앞면: 기존 구성에서 ACTUAL DATA(눕힌 vtext)만 제거 */
+    return `<div class="spec-card front">
       ${cutSVG()}
       <div class="spec-chip"><img src="${e.imgPath}" alt="" onerror="this.style.display='none'"></div>
       <div class="spec-coord">
@@ -187,9 +233,9 @@
         <div class="hd"><span class="sw" style="background:${hex}"></span>${hex}</div>
         <div class="val">RGB(${r},${g},${b})<br>HSL(${hsl})${cov != null ? '<br>COVERAGE ' + cov + '%' : ''}</div>
       </div>
-      <div class="spec-vtext"><div class="spec-vtext-in">${analysis}</div></div>
       <div class="spec-keys"><div class="hd">KEYWORDS</div><div class="kv">${e.keywords || '—'}</div></div>
       <div class="spec-pageno">${pageno}</div>
+      ${palette}
     </div>`;
   }
 
@@ -214,7 +260,8 @@
     const total = list.length;
     out.innerHTML = list.map(function (e, i) {
       const pageno = String(i + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
-      return `<section class="spec-page">${cardHTML(e, 'front', covs[i], pageno)}</section>`;
+      return `<section class="spec-page">${cardHTML(e, 'front', covs[i], pageno)}</section>`
+           + `<section class="spec-page">${cardHTML(e, 'back', covs[i], pageno)}</section>`;
     }).join('');
 
     const imgs = Array.prototype.slice.call(out.querySelectorAll('.spec-chip img'));

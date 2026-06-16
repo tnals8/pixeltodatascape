@@ -313,7 +313,7 @@ body {
     top: 0; left: 0; width: 100%;
     background: var(--coord-bg); 
     z-index: 100; 
-    padding: 19px 120px 12px 60px; 
+    padding: 19px 64px 12px 40px; 
     margin-bottom: 0; 
     border-bottom: 0.5px solid var(--panel-border); 
     font-family: var(--font-mono); 
@@ -323,7 +323,7 @@ body {
 
 /* 3. 데이터 컨테이너 (시작 위치 조정) */
 .data-container { 
-    padding: 100px 120px 100px 60px; 
+    padding: 100px 64px 100px 40px; 
     pointer-events: auto; 
 }
 
@@ -334,7 +334,7 @@ body {
 .type-line {
     display: flex; /* 2열 정렬 활성화 */
     align-items: flex-start;
-    gap: 30px; /* 왼쪽 분류와 오른쪽 내용 사이 간격 */
+    gap: 24px; /* 왼쪽 분류와 오른쪽 내용 사이 간격 */
     margin-bottom: 80px; /* 단계별 세로 간격 */
     width: 100%;
     font-size: 11px;
@@ -343,7 +343,7 @@ body {
 
 /* 왼쪽 열: [ GEMINI INFERENCE_ ] 등 대분류 */
 .type-line b.title {
-    flex: 0 0 160px; /* 왼쪽 열 너비 고정 */
+    flex: 0 0 130px; /* 왼쪽 열 너비 고정 */
     font-size: 11px;
     font-weight: 700;
     color: var(--text-title);
@@ -557,7 +557,7 @@ body {
 
 /* 본문 텍스트는 가독성을 위해 크기를 유지합니다. */
 .about-text {
-    font-size: 12px;
+    font-size: 11px;
     line-height: 1.8;
     color: var(--text-main);
     opacity: 0.8;
@@ -854,8 +854,8 @@ position: relative;
     padding-top: 24px !important; 
     margin-top: 24px !important;  
     /* 구분선을 좌우로 살짝 연장 (내용 위치는 패딩으로 보정해 그대로 유지) */
-    margin-left: -24px; margin-right: -64px;
-    padding-left: 24px; padding-right: 64px;
+    margin-left: -24px; margin-right: -58px;
+    padding-left: 24px; padding-right: 58px;
     
     /* ✨ 선이 스르륵 나타나도록 부드러운 애니메이션 추가 */
     transition: border-color 0.4s ease; 
